@@ -12,8 +12,8 @@ export const carsService = {
         const response = $fetchWithHeaders<Car[]>(`${API_URL}/garage?${query.toString()}`);
         return response;
     },
-    getCarById: async (id: string) => {
-        const response = await $fetch(`${API_URL}/garage/${id}`);
+    getCarById: async (id: number): Promise<Car> => {
+        const response = await $fetch<Car>(`${API_URL}/garage/${id}`);
         return response;
     },
     createCar: async (car: createCarDTO) => {
