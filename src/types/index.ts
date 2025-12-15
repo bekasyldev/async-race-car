@@ -44,6 +44,10 @@ export interface Winner {
     time: number;
 }
 
+export interface WinnerWithCar extends Winner {
+    car: Car;
+}
+
 export interface getWinnersDTO {
     _page?: number;
     _limit?: number;
