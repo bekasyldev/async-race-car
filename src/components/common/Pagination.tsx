@@ -3,7 +3,7 @@ import { Button } from "./Button";
 interface PaginationProps {
     page: number;
     itemsPerPage: number;
-    totalItems?: number;
+    totalItems: number | null;
     onPageChange: (page: number) => void;
 }
 

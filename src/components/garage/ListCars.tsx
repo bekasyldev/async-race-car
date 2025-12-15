@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-
 import CarItem from "./CarItem";
+import { CARS_PER_PAGE } from "../../constant";
 import { api } from "../../services/api";
 import useStore from "../../stores/useStore";
 import Pagination from "../common/Pagination";
@@ -8,39 +7,10 @@ import Pagination from "../common/Pagination";
 import type { Car } from "../../types";
 
 export default function ListCars() {
-    const [page, setPage] = useState(1);
-    const [cars, setCars] = useState<Car[]>([]);
-    const [totalItems, setTotalItems] = useState<number | undefined>(undefined);
-    const useUserStore = useStore();
-    const carsPerPage = 7;
-
-    useEffect(() => {
-        const fetchCars = async () => {
-            try {
-                const response = await api.cars.getCars({
-                    _page: page,
-                    _limit: carsPerPage,
-                });
-                const { data, totalCount } = response;
-                setTotalItems(totalCount ?? undefined);
-                setCars(data);
-            } catch (error) {
-                throw new Error(`Error fetching cars: ${error}`);
-            }
-        };
-        fetchCars();
-    }, [page]);
+    const { cars, page, selectCar, deleteCar, setPage, totalCars } = useStore();
 
     const handelSelectCar = (car: Car) => {
-        useUserStore.setCar(car);
-    };
-
-    const handleRemoveCar = async (carId: number) => {
-        try {
-            await api.cars.deleteCar(carId);
-        } catch (error) {
-            throw new Error(`Error removing car: ${error}`);
-        }
+        selectCar(car);
     };
 
     const handleChangeEngine = async (carId: number, status: "started" | "stopped") => {
@@ -59,16 +29,16 @@ export default function ListCars() {
                         key={car.id}
                         car={car}
                         onChangeEngine={handleChangeEngine}
-                        onRemove={handleRemoveCar}
+                        onRemove={async () => deleteCar(car.id)}
                         onSelect={handelSelectCar}
                     />
                 ))}
             </div>
             <Pagination
-                itemsPerPage={carsPerPage}
+                itemsPerPage={CARS_PER_PAGE}
                 onPageChange={setPage}
                 page={page}
-                totalItems={totalItems}
+                totalItems={totalCars}
             />
         </div>
     );
