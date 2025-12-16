@@ -12,6 +12,9 @@ export const generateCars = async () => {
         "Blaze",
         "Vortex",
         "Comet",
+        "Cyclone",
+        "Hurricane",
+        "Tornado",
     ];
     const randomeCars = [];
 
