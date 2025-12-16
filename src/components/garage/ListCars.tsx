@@ -8,6 +8,34 @@ import Pagination from "../common/Pagination";
 
 import type { Car } from "../../types";
 
+const Cars = ({
+    cars,
+    handleSelectCar,
+    deleteCar,
+    handleChangeEngine,
+}: {
+    cars: Car[];
+    handleSelectCar: (car: Car) => void;
+    deleteCar: (id: number) => void;
+    handleChangeEngine: (id: number, action: "started" | "stopped") => void;
+}) => (
+    <div>
+        {cars.length === 0 ? (
+            <p>No cars</p>
+        ) : (
+            cars.map((car) => (
+                <CarItem
+                    key={car.id}
+                    car={car}
+                    onChangeEngine={handleChangeEngine}
+                    onRemove={async () => deleteCar(car.id)}
+                    onSelect={handleSelectCar}
+                />
+            ))
+        )}
+    </div>
+);
+
 export default function ListCars() {
     const { cars, page, selectCar, fetchCars, deleteCar, setPage, totalCars } = useStore();
 
@@ -19,9 +47,9 @@ export default function ListCars() {
         selectCar(car);
     };
 
-    const handleChangeEngine = async (carId: number, status: "started" | "stopped") => {
+    const handleChangeEngine = async (id: number, status: "started" | "stopped") => {
         try {
-            await api.engine.updateEngine({ id: carId, status });
+            await api.engine.updateEngine({ id, status });
         } catch (error) {
             throw new Error(`Error changing engine status: ${error}`);
         }
@@ -30,15 +58,12 @@ export default function ListCars() {
     return (
         <div className="p-5">
             <div className="grid grid-rows-[repeat(auto-fill,minmax(80px,1fr))] gap-4 mb-6">
-                {cars.map((car) => (
-                    <CarItem
-                        key={car.id}
-                        car={car}
-                        onChangeEngine={handleChangeEngine}
-                        onRemove={async () => deleteCar(car.id)}
-                        onSelect={handleSelectCar}
-                    />
-                ))}
+                <Cars
+                    cars={cars}
+                    deleteCar={deleteCar}
+                    handleChangeEngine={handleChangeEngine}
+                    handleSelectCar={handleSelectCar}
+                />
             </div>
             <Pagination
                 itemsPerPage={CARS_PER_PAGE}

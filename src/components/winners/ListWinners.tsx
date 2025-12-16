@@ -34,8 +34,8 @@ export default function ListWinners() {
     }, [page]);
 
     return (
-        <div className="p-5">
-            <TableWinners winners={winners} />
+        <div className="p-5 space-y-4">
+            {winners.length === 0 ? <p>No winners</p> : <TableWinners winners={winners} />}
             <Pagination
                 itemsPerPage={WINNERS_PER_PAGE}
                 onPageChange={setPage}
