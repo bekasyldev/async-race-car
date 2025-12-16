@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import CarItem from "./CarItem";
 import { CARS_PER_PAGE } from "../../constant";
 import { api } from "../../services/api";
@@ -7,9 +9,13 @@ import Pagination from "../common/Pagination";
 import type { Car } from "../../types";
 
 export default function ListCars() {
-    const { cars, page, selectCar, deleteCar, setPage, totalCars } = useStore();
+    const { cars, page, selectCar, fetchCars, deleteCar, setPage, totalCars } = useStore();
 
-    const handelSelectCar = (car: Car) => {
+    useEffect(() => {
+        fetchCars();
+    }, [page, fetchCars]);
+
+    const handleSelectCar = (car: Car) => {
         selectCar(car);
     };
 
@@ -30,7 +36,7 @@ export default function ListCars() {
                         car={car}
                         onChangeEngine={handleChangeEngine}
                         onRemove={async () => deleteCar(car.id)}
-                        onSelect={handelSelectCar}
+                        onSelect={handleSelectCar}
                     />
                 ))}
             </div>

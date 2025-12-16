@@ -4,9 +4,18 @@ import { generateCars } from "../../utils/generateRandomCars";
 import { Button } from "../common/Button";
 
 export default function GarageHeader() {
-    const { createCar, updateCar } = useStore();
+    const { createCar, updateCar, fetchCars } = useStore();
     const handleGetWinner = async () => {
         // TODO: Implement race logic
+    };
+
+    const handelGenerateCars = async () => {
+        try {
+            await generateCars();
+            await fetchCars();
+        } catch (error) {
+            throw new Error(`Error generating cars: ${error}`);
+        }
     };
     return (
         <header className="bg-white border-b border-gray-200">
@@ -26,7 +35,7 @@ export default function GarageHeader() {
                     <div>
                         <Button
                             className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
-                            onClick={generateCars}
+                            onClick={handelGenerateCars}
                         >
                             Generate Cars
                         </Button>
