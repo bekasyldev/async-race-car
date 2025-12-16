@@ -1,5 +1,4 @@
-import { useState } from "react";
-
+import useStore from "../../stores/useStore";
 import { Button } from "../common/Button";
 import { Input } from "../common/Input";
 
@@ -11,10 +10,7 @@ interface CarActionFormProps {
 }
 
 const CarActionForm = ({ action, onSubmit }: CarActionFormProps) => {
-    const [createCarBrand, setCreateCarBrand] = useState("");
-    const [updateCarBrand, setUpdateCarBrand] = useState("");
-    const [createCarColor, setCreateCarColor] = useState("#000000");
-    const [updateCarColor, setUpdateCarColor] = useState("#000000");
+    const { createInput, updateInput, setCreateInput, setUpdateInput } = useStore();
     const isCreateAction = action === "create";
 
     return (
@@ -22,28 +18,28 @@ const CarActionForm = ({ action, onSubmit }: CarActionFormProps) => {
             <Input
                 placeholder="Car brand"
                 type="text"
-                value={isCreateAction ? createCarBrand : updateCarBrand}
+                value={isCreateAction ? createInput.name : updateInput.name}
                 onChange={(e) =>
                     isCreateAction
-                        ? setCreateCarBrand(e.target.value)
-                        : setUpdateCarBrand(e.target.value)
+                        ? setCreateInput(e.target.value, createInput.color)
+                        : setUpdateInput(e.target.value, updateInput.color)
                 }
             />
             <Input
                 type="color"
-                value={isCreateAction ? createCarColor : updateCarColor}
+                value={isCreateAction ? createInput.color : updateInput.color}
                 onChange={(e) =>
                     isCreateAction
-                        ? setCreateCarColor(e.target.value)
-                        : setUpdateCarColor(e.target.value)
+                        ? setCreateInput(createInput.name, e.target.value)
+                        : setUpdateInput(updateInput.name, e.target.value)
                 }
             />
             <Button
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
                 onClick={
                     isCreateAction
-                        ? () => onSubmit({ name: createCarBrand, color: createCarColor })
-                        : () => onSubmit({ name: updateCarBrand, color: updateCarColor })
+                        ? () => onSubmit({ name: createInput.name, color: createInput.color })
+                        : () => onSubmit({ name: updateInput.name, color: updateInput.color })
                 }
             >
                 {isCreateAction ? "Create" : "Update"}
