@@ -4,6 +4,11 @@ export interface Car {
     color: string;
 }
 
+export interface ActionCar {
+    name: string;
+    color: string;
+}
+
 export interface getCarsDTO {
     _page?: number;
     _limit?: number;
