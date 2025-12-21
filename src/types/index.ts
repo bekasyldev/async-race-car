@@ -2,6 +2,8 @@ export interface Car {
     id: number;
     name: string;
     color: string;
+    time?: number;
+    startTime: number | undefined;
 }
 
 export interface ActionCar {

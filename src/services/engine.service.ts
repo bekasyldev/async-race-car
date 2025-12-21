@@ -1,21 +1,25 @@
 import { API_URL } from "../constant";
 import { $fetch } from "../utils/fetch";
 
-import type { engineActionDTO, engineModeDTO } from "../types";
+import type { Engine, engineActionDTO, engineModeDTO } from "../types";
 
 export const engineService = {
-    updateEngine: async (engine: engineActionDTO) => {
-        const response = $fetch(`${API_URL}/engine`, {
+    updateEngine: async (engine: engineActionDTO): Promise<Engine> => {
+        const params = new URLSearchParams();
+        if (engine.id) params.append("id", engine.id.toString());
+        if (engine.status) params.append("status", engine.status);
+        const response = $fetch<Engine>(`${API_URL}/engine?${params.toString()}`, {
             method: "PATCH",
-            body: JSON.stringify(engine),
             headers: { "Content-Type": "application/json" },
         });
         return response;
     },
-    switchMode: async (engineMode: engineModeDTO) => {
-        const response = $fetch(`${API_URL}/engine`, {
+    switchMode: async (engineMode: engineModeDTO): Promise<Engine> => {
+        const params = new URLSearchParams();
+        if (engineMode.id) params.append("id", engineMode.id.toString());
+        if (engineMode.status) params.append("mode", engineMode.status);
+        const response = $fetch<Engine>(`${API_URL}/engine?${params.toString()}`, {
             method: "PATCH",
-            body: JSON.stringify(engineMode),
             headers: { "Content-Type": "application/json" },
         });
         return response;

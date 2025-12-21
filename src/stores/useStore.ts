@@ -5,6 +5,15 @@ import { api } from "../services/api";
 
 import type { ActionCar, Car } from "../types";
 
+const mergeTimes = (newCars: Car[], oldCars: Car[]) => {
+    const timeMap = new Map(oldCars.map((c) => [c.id, { time: c.time, startTime: c.startTime }]));
+    return newCars.map((car) => ({
+        ...car,
+        time: timeMap.get(car.id)?.time,
+        startTime: timeMap.get(car.id)?.startTime,
+    }));
+};
+
 interface CarState {
     cars: Car[];
     totalCars: number | null;
@@ -19,6 +28,7 @@ interface CarState {
     };
     selectedCarId: number | null;
     setPage: (page: number) => void;
+    setAnimationTime: (id: number, time?: number) => void;
     setCreateInput: (name: string, color: string) => void;
     setUpdateInput: (name: string, color: string) => void;
     selectCar: (car: Car) => void;
@@ -38,12 +48,18 @@ const useStore = create<CarState>((set, get) => ({
     setPage: (page) => set({ page }),
     setCreateInput: (name, color) => set({ createInput: { name, color } }),
     setUpdateInput: (name, color) => set({ updateInput: { name, color } }),
+    setAnimationTime: (id, time) =>
+        set((state) => ({
+            cars: state.cars.map((car) =>
+                car.id === id ? { ...car, time, startTime: time ? Date.now() : undefined } : car,
+            ),
+        })),
     selectCar: (car) =>
         set({ selectedCarId: car.id, updateInput: { name: car.name, color: car.color } }),
     fetchCars: async () => {
-        const { page } = get();
+        const { page, cars } = get();
         const response = await api.cars.getCars({ _page: page, _limit: CARS_PER_PAGE });
-        set({ cars: response.data, totalCars: response.totalCount });
+        set({ cars: mergeTimes(response.data, cars), totalCars: response.totalCount });
     },
     createCar: async () => {
         const { fetchCars, createInput } = get();
