@@ -78,8 +78,9 @@ const useStore = create<CarState>((set, get) => ({
         get().fetchCars();
     },
     updateCar: async () => {
-        if (get().selectedCarId) {
-            await api.cars.updateCar(get().selectedCarId!, get().updateInput);
+        const { selectedCarId, updateInput } = get();
+        if (selectedCarId) {
+            await api.cars.updateCar(selectedCarId, updateInput);
             get().fetchCars();
         }
     },
