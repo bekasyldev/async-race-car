@@ -14,21 +14,32 @@ const mergeTimes = (newCars: Car[], oldCars: Car[]) => {
     }));
 };
 
+const handleSaveWinner = async (id: number, time: number) => {
+    try {
+        const existing = (await api.winners.getWinnerById(id)) as { wins: number; time: number };
+        if (existing) {
+            await api.winners.updateWinner(id, {
+                wins: existing.wins + 1,
+                time: Math.min(existing.time, time),
+            });
+        } else {
+            await api.winners.createWinner({ id, wins: 1, time });
+        }
+    } catch {
+        await api.winners.createWinner({ id, wins: 1, time });
+    }
+};
+
 interface CarState {
     cars: Car[];
     totalCars: number | null;
     page: number;
-    createInput: {
-        name: string;
-        color: string;
-    };
-    updateInput: {
-        name: string;
-        color: string;
-    };
+    createInput: { name: string; color: string };
+    updateInput: { name: string; color: string };
     selectedCarId: number | null;
     setPage: (page: number) => void;
     setAnimationTime: (id: number, time?: number) => void;
+    saveWinner: (id: number, time: number) => Promise<void>;
     setCreateInput: (name: string, color: string) => void;
     setUpdateInput: (name: string, color: string) => void;
     selectCar: (car: Car) => void;
@@ -56,26 +67,25 @@ const useStore = create<CarState>((set, get) => ({
         })),
     selectCar: (car) =>
         set({ selectedCarId: car.id, updateInput: { name: car.name, color: car.color } }),
+    saveWinner: async (id, time) => handleSaveWinner(id, time),
     fetchCars: async () => {
         const { page, cars } = get();
         const response = await api.cars.getCars({ _page: page, _limit: CARS_PER_PAGE });
         set({ cars: mergeTimes(response.data, cars), totalCars: response.totalCount });
     },
     createCar: async () => {
-        const { fetchCars, createInput } = get();
-        await api.cars.createCar(createInput);
-        await fetchCars();
+        await api.cars.createCar(get().createInput);
+        get().fetchCars();
     },
     updateCar: async () => {
-        const { selectedCarId, fetchCars, updateInput } = get();
-        if (selectedCarId) {
-            await api.cars.updateCar(selectedCarId, updateInput);
-            await fetchCars();
+        if (get().selectedCarId) {
+            await api.cars.updateCar(get().selectedCarId!, get().updateInput);
+            get().fetchCars();
         }
     },
     deleteCar: async (id) => {
         await api.cars.deleteCar(id);
-        await get().fetchCars();
+        get().fetchCars();
     },
 }));
 

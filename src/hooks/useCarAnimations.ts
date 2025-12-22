@@ -4,26 +4,50 @@ import { SPEED_DIVIDE } from "../constant";
 import { api } from "../services/api";
 import useStore from "../stores/useStore";
 
-export function useCarAnimations() {
+import type { Car } from "../types";
+
+const calcTime = (dist: number, vel: number) => (dist / vel / SPEED_DIVIDE).toFixed(1);
+
+const switchCarToDrive = async (car: Car) => {
+    try {
+        await api.engine.switchMode({ id: car.id, status: "drive" });
+        return { id: car.id, success: true, time: car.time };
+    } catch {
+        return { id: car.id, success: false, time: car.time };
+    }
+};
+
+export function useCarAnimations(onWinner?: (id: number, time: number) => Promise<void>) {
     const { setAnimationTime } = useStore();
 
     const handleChangeEngine = useCallback(
         async (id: number, status: "started" | "stopped") => {
             try {
-                const response = await api.engine.updateEngine({ id, status });
-                if (status === "started") {
-                    const { velocity, distance } = response;
-                    const time = (distance / velocity / SPEED_DIVIDE).toFixed(1);
-                    setAnimationTime(id, parseFloat(time));
-                } else {
-                    setAnimationTime(id, undefined);
-                }
+                const res = await api.engine.updateEngine({ id, status });
+                const time =
+                    status === "started"
+                        ? parseFloat(calcTime(res.distance, res.velocity))
+                        : undefined;
+                setAnimationTime(id, time);
             } catch (error) {
-                throw new Error(`Error when updating engine ${error}`);
+                throw new Error(`Engine Error: ${error}`);
             }
         },
         [setAnimationTime],
     );
 
-    return { handleChangeEngine };
+    const handleReset = useCallback(() => {
+        useStore.getState().cars.forEach((car) => setAnimationTime(car.id, undefined));
+    }, [setAnimationTime]);
+
+    const handleRace = useCallback(async () => {
+        const { cars } = useStore.getState();
+        await Promise.all(cars.map(async (car) => handleChangeEngine(car.id, "started")));
+
+        const winner = await Promise.race(cars.map(switchCarToDrive));
+
+        if (winner?.success && onWinner) await onWinner(winner.id, winner.time ?? 1);
+    }, [handleChangeEngine, onWinner]);
+
+    return { handleChangeEngine, handleReset, handleRace };
 }
