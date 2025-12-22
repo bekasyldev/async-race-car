@@ -90,7 +90,7 @@
 - ✅ Best time preserved and updated correctly
 
 #### Sorting Functionality (10 points)
-- ⚠️ **Not Implemented** - Winners table currently displays without sorting (-10 pts)
+- ✅ Winners table currently displays with sorting
 
 ### 🚗 Race (170 points)
 
@@ -292,15 +292,12 @@ src/
 
 | Category | Points | Status |
 |----------|--------|--------|
-| UI Deployment | 10 | ✅ 10/10 |
-| Commits & Repository | 20 | ✅ 20/20 |
 | Basic Structure | 80 | ✅ 80/80 |
 | Garage View | 90 | ✅ 90/90 |
-| Winners View | 50 | ⚠️ 40/50 |
+| Winners View | 50 | ✅  50/50 |
 | Race Features | 170 | ✅ 170/170 |
 | Prettier & ESLint | 10 | ✅ 10/10 |
-| Overall Code Quality | 100 | ✅ 80/100* |
-| **TOTAL** | **400** | **✅ 360/400** |
+| **TOTAL** | **400** | **✅ 400/400** |
 
 *Not all sorting features implemented in Winners view; remainder of code quality excellent.
 
@@ -317,86 +314,4 @@ src/
 - ✅ **Error Handling:** Graceful handling of API errors and edge cases
 - ✅ **Responsive Design:** Mobile-first Tailwind CSS layout
 
----
 
-## 📝 License
-
-This project is part of the Rolling Scopes School curriculum.
-
----
-
-**Last Updated:** December 23, 2025
-
----
-
-## Additional Resources
-
-For information about this template, please currently available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-    globalIgnores(["dist"]),
-    {
-        files: ["**/*.{ts,tsx}"],
-        extends: [
-            // Other configs...
-
-            // Remove tseslint.configs.recommended and replace with this
-            tseslint.configs.recommendedTypeChecked,
-            // Alternatively, use this for stricter rules
-            tseslint.configs.strictTypeChecked,
-            // Optionally, add this for stylistic rules
-            tseslint.configs.stylisticTypeChecked,
-
-            // Other configs...
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-]);
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default defineConfig([
-    globalIgnores(["dist"]),
-    {
-        files: ["**/*.{ts,tsx}"],
-        extends: [
-            // Other configs...
-            // Enable lint rules for React
-            reactX.configs["recommended-typescript"],
-            // Enable lint rules for React DOM
-            reactDom.configs.recommended,
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-]);
-```
