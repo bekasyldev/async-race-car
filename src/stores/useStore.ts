@@ -37,6 +37,7 @@ interface CarState {
     createInput: { name: string; color: string };
     updateInput: { name: string; color: string };
     selectedCarId: number | null;
+    isRaceActive: boolean;
     setPage: (page: number) => void;
     setAnimationTime: (id: number, time?: number) => void;
     saveWinner: (id: number, time: number) => Promise<void>;
@@ -47,18 +48,21 @@ interface CarState {
     createCar: (car: ActionCar) => Promise<void>;
     updateCar: (car: ActionCar) => Promise<void>;
     deleteCar: (id: number) => Promise<void>;
+    setRaceActive: (isActive: boolean) => void;
 }
 
 const useStore = create<CarState>((set, get) => ({
     cars: [],
-    totalCars: 0,
+    totalCars: null,
     page: 1,
     createInput: { name: "", color: "#000000" },
     updateInput: { name: "", color: "#000000" },
     selectedCarId: null,
+    isRaceActive: false,
     setPage: (page) => set({ page }),
     setCreateInput: (name, color) => set({ createInput: { name, color } }),
     setUpdateInput: (name, color) => set({ updateInput: { name, color } }),
+    setRaceActive: (isActive) => set({ isRaceActive: isActive }),
     setAnimationTime: (id, time) =>
         set((state) => ({
             cars: state.cars.map((car) =>
@@ -79,10 +83,8 @@ const useStore = create<CarState>((set, get) => ({
     },
     updateCar: async () => {
         const { selectedCarId, updateInput } = get();
-        if (selectedCarId) {
-            await api.cars.updateCar(selectedCarId, updateInput);
-            get().fetchCars();
-        }
+        if (selectedCarId) await api.cars.updateCar(selectedCarId, updateInput);
+        get().fetchCars();
     },
     deleteCar: async (id) => {
         await api.cars.deleteCar(id);

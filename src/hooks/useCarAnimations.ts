@@ -18,7 +18,7 @@ const switchCarToDrive = async (car: Car) => {
 };
 
 export function useCarAnimations(onWinner?: (id: number, time: number) => Promise<void>) {
-    const { setAnimationTime } = useStore();
+    const { setAnimationTime, setRaceActive } = useStore();
 
     const handleChangeEngine = useCallback(
         async (id: number, status: "started" | "stopped") => {
@@ -38,16 +38,17 @@ export function useCarAnimations(onWinner?: (id: number, time: number) => Promis
 
     const handleReset = useCallback(() => {
         useStore.getState().cars.forEach((car) => setAnimationTime(car.id, undefined));
-    }, [setAnimationTime]);
+        setRaceActive(false);
+    }, [setAnimationTime, setRaceActive]);
 
     const handleRace = useCallback(async () => {
+        setRaceActive(true);
         const { cars } = useStore.getState();
         await Promise.all(cars.map(async (car) => handleChangeEngine(car.id, "started")));
-
         const winner = await Promise.race(cars.map(switchCarToDrive));
-
         if (winner?.success && onWinner) await onWinner(winner.id, winner.time ?? 1);
-    }, [handleChangeEngine, onWinner]);
+        setRaceActive(false);
+    }, [handleChangeEngine, onWinner, setRaceActive]);
 
     return { handleChangeEngine, handleReset, handleRace };
 }
